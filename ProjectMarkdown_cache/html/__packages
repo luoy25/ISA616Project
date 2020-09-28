@@ -9,3 +9,10 @@ kableExtra
 lattice
 caret
 MASS
+tidyverse
+tibble
+tidyr
+readr
+purrr
+stringr
+forcats

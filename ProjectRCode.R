@@ -54,6 +54,13 @@ valid<-wine[-trainIndex, ]
 nrow(train)
 nrow(valid)
 
+# feature importance
+set.seed(13)
+library(caret)
+rPartMod <- train(quality ~ ., data=train, method="rpart")
+rpartImp <- varImp(rPartMod)
+print(rpartImp)
+
 # Stepwise
 step0 = lm(formula = quality ~ ., data = train)
 summary(step0)
@@ -68,6 +75,11 @@ step2 = lm(formula = quality ~ fixed.acidity+volatile.acidity+residual.sugar+
              alcohol+wine.type, data = train)
 summary(step2)
 
+step3 = lm(formula = quality ~ volatile.acidity+ 
+             free.sulfur.dioxide+density+
+             alcohol, data = train)
+summary(step3)
+
 library(MASS)
 # Fit the full model 
 full <- lm(quality ~., data = train)
@@ -78,9 +90,6 @@ summary(step)
 p.train<-predict(step)
 p.valid<-predict(step, newdata=valid)
 head(p.train)
-
-train$Pred.Price<-p.train
-valid$Pred.Price<-p.valid
 
 library(caret)
 RMSE(p.valid, valid$quality)

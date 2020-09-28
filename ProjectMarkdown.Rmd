@@ -53,88 +53,68 @@ Outline
 Questions to ask: business value proposition, Downloading data, bibliography 
 
 
-# Overview
+# Introduction
+
+## Data Background
+
+The two datasets are related to red and white variants of the Portuguese "Vinho Verde" wine. For more details, consult: Web Link or the reference Cortez et al., 2009. 
 
 ## Business Problem
 
 ## Business Value Proposition
 ![](BusinessValueProposition.png)
 
-
-# Data Overview
-
 ## Source of Data
 
+Paulo Cortez, University of Minho, Guimarães, Portugal, http://www3.dsi.uminho.pt/pcortez, A. Cerdeira, F. Almeida, T. Matos and J. Reis, Viticulture Commission of the Vinho Verde Region(CVRVV), Porto, Portugal, 2009
+
+Download red wine dataset: <https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv>
+
+Download white wine dataset: <https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-white.csv>
+
 ## Dataset Description
-<https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality.names>
 
-## A Glimps of Data
+Download available at: <https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality.names>
+
+## A Glimps of Data {.tabset .tabset-fade .tabset-pills}
 ```{r}
-wine=readRDS("wine.RDS")
-head(wine)
+wineRed = read.csv("winequality-red.csv",sep = ";")
+wineWhite = read.csv("winequality-white.csv",sep = ";")
 ```
 
-## Dataset Summary {.tabset .tabset-fade .tabset-pills}
-
-### MetaData {-}
+### RedWine {-}
 ```{r}
-library(DataExplorer)
-library(kableExtra)
-z<-introduce(wine)
-z<-as.data.frame(t(z))
-colnames(z)<-c()
-knitr::kable(
-   z,
-  caption="Data Introduction"
-  ) %>% kable_styling(bootstrap_options = c("striped", "hover"),
-                full_width = F,
-                font_size = 12,
-                position = "left")
+head(wineRed)
 ```
 
-### Histograms {-}
+### RedWine Structure{-}
 ```{r}
-library(DataExplorer)
-plot_histogram(wine)
+str(wineRed)
 ```
 
-### Bar Plot {-}
+### WhiteWine {-}
 ```{r}
-library(DataExplorer)
-plot_bar(wine)
+head(wineWhite)
 ```
 
-### Statistical Summary {-}
+### WhiteWine Structure{-}
 ```{r}
-summary(wine)
+str(wineWhite)
 ```
-
-### Data Structure {-}
-```{r}
-str(wine)
-```
-
-### Correlation Plot {-}
-```{r}
-library(DataExplorer)
-plot_correlation(wine, type = "c")
-```
-
-
-## Missing Data
-```{r}
-library(DataExplorer)
-plot_missing(wine)
-```
-There are no missing data present in this dataset
 
 
 # Data Preprocessing
 
+## Missing Data
+```{r}
+library(tidyverse)
+wineRed %>% is.na() %>% colSums()
+wineWhite %>% is.na() %>% colSums()
+```
+There are no missing data present in both red and white wine datasets
+
 ## Merging Datasets {.tabset .tabset-fade .tabset-pills}
 ```{r}
-wineRed = read.csv("winequality-red.csv",sep = ";")
-wineWhite = read.csv("winequality-white.csv",sep = ";")
 wineRed$wine.type <- 1
 wineWhite$wine.type <- 0
 dim(wineRed)
@@ -143,6 +123,7 @@ wine = rbind(wineRed, wineWhite)
 wine$wine.type <- as.factor(wine$wine.type)
 dim(wine)
 ```
+
 ### MetaData For Red Wine {-}
 ```{r echo=FALSE}
 library(DataExplorer)
@@ -192,7 +173,42 @@ knitr::kable(
 ```
 
 
-## Principle Component Analysis (for feature selection - Optional)
+# Data Overview
+
+## Dataset Summary {.tabset .tabset-fade .tabset-pills}
+
+### Head of Wine {-}
+```{r}
+head(wine)
+```
+
+### Histograms {-}
+```{r}
+library(DataExplorer)
+plot_histogram(wine)
+```
+
+### Bar Plot {-}
+```{r}
+library(DataExplorer)
+plot_bar(wine)
+```
+
+### Statistical Summary {-}
+```{r}
+summary(wine)
+```
+
+### Data Structure {-}
+```{r}
+str(wine)
+```
+
+### Correlation Plot {-}
+```{r}
+library(DataExplorer)
+plot_correlation(wine, type = "c")
+```
 
 
 # Analysis and Modeling
