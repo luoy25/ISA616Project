@@ -50,19 +50,20 @@ Outline
 6.Clear discussion of why you made analysis choices
 7.References to papers or citations you used to make decisions about the analysis
 
-Questions to ask: business value proposition, Downloading data, bibliography 
-
 
 # Introduction
 
 ## Data Background
 
-The two datasets are related to red and white variants of the Portuguese "Vinho Verde" wine. For more details, consult: Web Link or the reference Cortez et al., 2009. 
+The two datasets are related to red and white variants of the Portuguese "Vinho Verde" wine. For more details, consult: https://www.vinhoverde.pt/en/ 
 
 ## Business Problem
 
 ## Business Value Proposition
+
 ![](BusinessValueProposition.png)
+
+# Data Overview
 
 ## Source of Data
 
@@ -77,27 +78,32 @@ Download white wine dataset: <https://archive.ics.uci.edu/ml/machine-learning-da
 Download available at: <https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality.names>
 
 ## A Glimps of Data {.tabset .tabset-fade .tabset-pills}
+
 ```{r}
 wineRed = read.csv("winequality-red.csv",sep = ";")
 wineWhite = read.csv("winequality-white.csv",sep = ";")
 ```
 
 ### RedWine {-}
+
 ```{r}
 head(wineRed)
 ```
 
 ### RedWine Structure{-}
+
 ```{r}
 str(wineRed)
 ```
 
 ### WhiteWine {-}
+
 ```{r}
 head(wineWhite)
 ```
 
 ### WhiteWine Structure{-}
+
 ```{r}
 str(wineWhite)
 ```
@@ -106,14 +112,17 @@ str(wineWhite)
 # Data Preprocessing
 
 ## Missing Data
+
 ```{r}
 library(tidyverse)
 wineRed %>% is.na() %>% colSums()
 wineWhite %>% is.na() %>% colSums()
 ```
+
 There are no missing data present in both red and white wine datasets
 
 ## Merging Datasets {.tabset .tabset-fade .tabset-pills}
+
 ```{r}
 wineRed$wine.type <- 1
 wineWhite$wine.type <- 0
@@ -125,6 +134,7 @@ dim(wine)
 ```
 
 ### MetaData For Red Wine {-}
+
 ```{r echo=FALSE}
 library(DataExplorer)
 library(kableExtra)
@@ -141,6 +151,7 @@ knitr::kable(
 ```
 
 ### MetaData For White Wine {-}
+
 ```{r echo=FALSE}
 library(DataExplorer)
 library(kableExtra)
@@ -157,6 +168,7 @@ knitr::kable(
 ```
 
 ### MetaData For Wine {-}
+
 ```{r echo=FALSE}
 library(DataExplorer)
 library(kableExtra)
@@ -173,47 +185,61 @@ knitr::kable(
 ```
 
 
-# Data Overview
+# Explanatory Data Analysis
 
 ## Dataset Summary {.tabset .tabset-fade .tabset-pills}
 
 ### Head of Wine {-}
+
 ```{r}
 head(wine)
 ```
 
 ### Histograms {-}
+
 ```{r}
 library(DataExplorer)
 plot_histogram(wine)
 ```
 
 ### Bar Plot {-}
+
 ```{r}
 library(DataExplorer)
 plot_bar(wine)
 ```
 
 ### Statistical Summary {-}
+
 ```{r}
 summary(wine)
 ```
 
 ### Data Structure {-}
+
 ```{r}
 str(wine)
 ```
 
+## Correlation & Multicolinearity {.tabset}
+
 ### Correlation Plot {-}
+
 ```{r}
 library(DataExplorer)
 plot_correlation(wine, type = "c")
 ```
 
+### Strong Correlations
 
-# Analysis and Modeling
+Some of the predictors have strong correlations: 
+ * Between density and alcohol (-0.69)
+ * Between free.sulfur.dioxide and total.sulfur.dioxide (0.72)
+
+# Modeling
 
 ## Spliting Data
+
 ```{r}
 set.seed(13)
 trainIndex = sample(1:nrow(wine), size = round(0.75*nrow(wine)), replace=FALSE)
@@ -224,6 +250,7 @@ nrow(valid)
 ```
 
 ## Stepwise Model
+
 ```{r}
 library(MASS)
 # Fit the full model 
@@ -233,18 +260,30 @@ step <- stepAIC(full, direction = "both", trace = FALSE)
 summary(step)
 ```
 
+# Results and Performance
+
+## Model Interpretation
+
 ## Prediciton using Validaiton data
+
 ```{r}
 p.valid<-predict(step, newdata=valid)
 head(p.valid)
 ```
 
 ## Model Evaluation
+
 ```{r}
 library(caret)
 RMSE(p.valid, valid$quality)
 R2(p.valid, valid$quality)
 ```
+
+# Conclusion
+
+
+
+
 
 ## One number
 

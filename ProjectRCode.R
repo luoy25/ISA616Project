@@ -1,7 +1,7 @@
 # Load required packages
 if(require(pacman)==FALSE) 
   install.packages("pacman")
-pacman::p_load(tidyverse,hexbin,caret)
+pacman::p_load(tidyverse,hexbin,caret,car)
 
 # Get data
 library(curl)
@@ -61,9 +61,6 @@ rPartMod <- train(quality ~ ., data=train, method="rpart")
 rpartImp <- varImp(rPartMod)
 print(rpartImp)
 
-# Stepwise
-step0 = lm(formula = quality ~ ., data = train)
-summary(step0)
 
 step1 = lm(formula = quality ~ fixed.acidity+volatile.acidity+residual.sugar+chlorides+ 
                     free.sulfur.dioxide+total.sulfur.dioxide+density+pH+sulphates+
@@ -76,24 +73,33 @@ step2 = lm(formula = quality ~ fixed.acidity+volatile.acidity+residual.sugar+
 summary(step2)
 
 step3 = lm(formula = quality ~ volatile.acidity+ 
-             free.sulfur.dioxide+density+
+             free.sulfur.dioxide+density+citric.acid+
              alcohol, data = train)
 summary(step3)
 
+# StepWise Model
 library(MASS)
 # Fit the full model 
 full <- lm(quality ~., data = train)
 # Stepwise regression model
 step <- stepAIC(full, direction = "both", trace = FALSE)
 summary(step)
+varImp(step)
+library(car)
+vif(step)
 
-p.train<-predict(step)
+
 p.valid<-predict(step, newdata=valid)
 head(p.train)
 
 library(caret)
 RMSE(p.valid, valid$quality)
 R2(p.valid, valid$quality)
+
+
+
+
+
 
 
 
