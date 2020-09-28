@@ -6,3 +6,5 @@ dplyr
 leaflet
 DataExplorer
 kableExtra
+lattice
+caret

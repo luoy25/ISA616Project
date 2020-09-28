@@ -1,5 +1,5 @@
 ---
-title: "ISA 616 Class Project RMarkdown Summary"
+title: "ISA 616 Class Project RMarkdown"
 author: 
   - Yao Luo
 date: "`r format(Sys.Date(), '%B %d, %Y')`"
@@ -50,6 +50,8 @@ Outline
 6.Clear discussion of why you made analysis choices
 7.References to papers or citations you used to make decisions about the analysis
 
+Questions to ask: business value proposition, Downloading data, bibliography 
+
 
 # Overview
 
@@ -59,7 +61,7 @@ Outline
 ![](BusinessValueProposition.png)
 
 
-# Data Description
+# Data Overview
 
 ## Source of Data
 
@@ -107,6 +109,11 @@ plot_bar(wine)
 summary(wine)
 ```
 
+### Data Structure {-}
+```{r}
+str(wine)
+```
+
 ### Correlation Plot {-}
 ```{r}
 library(DataExplorer)
@@ -121,6 +128,7 @@ plot_missing(wine)
 ```
 There are no missing data present in this dataset
 
+
 # Data Preprocessing
 
 ## Merging Datasets {.tabset .tabset-fade .tabset-pills}
@@ -132,10 +140,11 @@ wineWhite$wine.type <- 0
 dim(wineRed)
 dim(wineWhite)
 wine = rbind(wineRed, wineWhite)
+wine$wine.type <- as.factor(wine$wine.type)
 dim(wine)
 ```
 ### MetaData For Red Wine {-}
-```{r}
+```{r echo=FALSE}
 library(DataExplorer)
 library(kableExtra)
 z<-introduce(wineRed)
@@ -151,7 +160,7 @@ knitr::kable(
 ```
 
 ### MetaData For White Wine {-}
-```{r}
+```{r echo=FALSE}
 library(DataExplorer)
 library(kableExtra)
 z<-introduce(wineWhite)
@@ -167,7 +176,7 @@ knitr::kable(
 ```
 
 ### MetaData For Wine {-}
-```{r}
+```{r echo=FALSE}
 library(DataExplorer)
 library(kableExtra)
 z<-introduce(wine)
@@ -183,10 +192,39 @@ knitr::kable(
 ```
 
 
-## Principle Component Analysis (for feature selection)
+## Principle Component Analysis (for feature selection - Optional)
 
 
 # Analysis and Modeling
+
+## Spliting Data
+```{r}
+set.seed(13)
+trainIndex = sample(1:nrow(wine), size = round(0.75*nrow(wine)), replace=FALSE)
+train<-wine[trainIndex, ]
+valid<-wine[-trainIndex, ]
+nrow(train)
+nrow(valid)
+```
+
+## Stepwise Model
+```{r}
+step = lm(formula = quality ~ ., data = train)
+summary(step)
+```
+
+## Prediciton using Validaiton data
+```{r}
+p.valid<-predict(step, newdata=valid)
+head(p.valid)
+```
+
+## Model Evaluation
+```{r}
+library(caret)
+RMSE(p.valid, valid$quality)
+R2(p.valid, valid$quality)
+```
 
 ## One number
 

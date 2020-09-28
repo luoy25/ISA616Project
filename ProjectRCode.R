@@ -1,7 +1,7 @@
 # Load required packages
 if(require(pacman)==FALSE) 
   install.packages("pacman")
-pacman::p_load(tidyverse,hexbin)
+pacman::p_load(tidyverse,hexbin,caret)
 
 # Get data
 library(curl)
@@ -26,6 +26,7 @@ wineRed$wine.type <- 1
 wineWhite$wine.type <- 0
 # Combining the dataframes into one
 wine = rbind(wineRed, wineWhite)
+wine$wine.type <- as.factor(wine$wine.type)
 head(wine)
 # Check to see if the merge was successful
 dim(wineRed)
@@ -42,8 +43,41 @@ library(ggplot2)
 create_report(wine, y = "quality")
 # save data
 saveRDS(wine, "wine.RDS")
+wine=readRDS("wine.RDS")
 
+# set seed
+set.seed(13)
+trainIndex = sample(1:nrow(wine), size = round(0.75*nrow(wine)), replace=FALSE)
 
+train<-wine[trainIndex, ]
+valid<-wine[-trainIndex, ]
+nrow(train)
+nrow(valid)
+
+# Stepwise
+step = lm(formula = quality ~ ., data = train)
+summary(step)
+
+step1 = lm(formula = quality ~ fixed.acidity+volatile.acidity+residual.sugar+chlorides+ 
+                    free.sulfur.dioxide+total.sulfur.dioxide+density+pH+sulphates+
+                    alcohol+wine.type, data = train)
+summary(step1)
+
+step2 = lm(formula = quality ~ fixed.acidity+volatile.acidity+residual.sugar+ 
+             free.sulfur.dioxide+total.sulfur.dioxide+density+pH+sulphates+
+             alcohol+wine.type, data = train)
+summary(step2)
+
+p.train<-predict(step)
+p.valid<-predict(step, newdata=valid)
+head(p.train)
+
+train$Pred.Price<-p.train
+valid$Pred.Price<-p.valid
+
+library(caret)
+RMSE(p.valid, valid$quality)
+R2(p.valid, valid$quality)
 
 
 
