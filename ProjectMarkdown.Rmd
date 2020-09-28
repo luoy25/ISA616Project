@@ -1,0 +1,246 @@
+---
+title: "ISA 616 Class Project RMarkdown Summary"
+author: 
+  - Yao Luo
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+bibliography: refs.bib
+output: 
+  html_document:
+    code_folding: show
+    df_print: paged
+    number_sections: yes
+    theme: cerulean
+    toc: yes
+    toc_float: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      cache=TRUE,
+                      out.width="100%",
+                      warning=FALSE,
+                      message=FALSE,
+                      clean_cache=TRUE)
+```
+Outline
+0 Introduction
+    In this paper......
+    An overview of the purpose of your analysis including details or references necessary.
+    
+1 Overview
+1.1 Business Problem
+1.2 Business Value Proposition
+
+2 Data Description
+◦the source
+◦the variables with definitions or a link to a codebook
+◦the number of observations in your data set
+◦detail on missingness
+◦a glimpse of your data if possible (e.g. head and tail)
+
+3 Data Preprocessing
+◦Feature generation
+◦Imputation
+◦Cleaning or merging of categories
+◦Outlier removal
+◦Anything that changes your data from the original form
+
+4.Your Final Analysis in small pieces with annotation
+5.Graphs to visualize different steps in your analysis
+6.Clear discussion of why you made analysis choices
+7.References to papers or citations you used to make decisions about the analysis
+
+
+# Overview
+
+## Business Problem
+
+## Business Value Proposition
+![](BusinessValueProposition.png)
+
+
+# Data Description
+
+## Source of Data
+
+## Dataset Description
+<https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality.names>
+
+## A Glimps of Data
+```{r}
+wine=readRDS("wine.RDS")
+head(wine)
+```
+
+## Dataset Summary {.tabset .tabset-fade .tabset-pills}
+
+### MetaData {-}
+```{r}
+library(DataExplorer)
+library(kableExtra)
+z<-introduce(wine)
+z<-as.data.frame(t(z))
+colnames(z)<-c()
+knitr::kable(
+   z,
+  caption="Data Introduction"
+  ) %>% kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = F,
+                font_size = 12,
+                position = "left")
+```
+
+### Histograms {-}
+```{r}
+library(DataExplorer)
+plot_histogram(wine)
+```
+
+### Bar Plot {-}
+```{r}
+library(DataExplorer)
+plot_bar(wine)
+```
+
+### Statistical Summary {-}
+```{r}
+summary(wine)
+```
+
+### Correlation Plot {-}
+```{r}
+library(DataExplorer)
+plot_correlation(wine, type = "c")
+```
+
+
+## Missing Data
+```{r}
+library(DataExplorer)
+plot_missing(wine)
+```
+There are no missing data present in this dataset
+
+# Data Preprocessing
+
+## Merging Datasets {.tabset .tabset-fade .tabset-pills}
+```{r}
+wineRed = read.csv("winequality-red.csv",sep = ";")
+wineWhite = read.csv("winequality-white.csv",sep = ";")
+wineRed$wine.type <- 1
+wineWhite$wine.type <- 0
+dim(wineRed)
+dim(wineWhite)
+wine = rbind(wineRed, wineWhite)
+dim(wine)
+```
+### MetaData For Red Wine {-}
+```{r}
+library(DataExplorer)
+library(kableExtra)
+z<-introduce(wineRed)
+z<-as.data.frame(t(z))
+colnames(z)<-c()
+knitr::kable(
+   z,
+  caption="Data Introduction"
+  ) %>% kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = F,
+                font_size = 12,
+                position = "left")
+```
+
+### MetaData For White Wine {-}
+```{r}
+library(DataExplorer)
+library(kableExtra)
+z<-introduce(wineWhite)
+z<-as.data.frame(t(z))
+colnames(z)<-c()
+knitr::kable(
+   z,
+  caption="Data Introduction"
+  ) %>% kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = F,
+                font_size = 12,
+                position = "left")
+```
+
+### MetaData For Wine {-}
+```{r}
+library(DataExplorer)
+library(kableExtra)
+z<-introduce(wine)
+z<-as.data.frame(t(z))
+colnames(z)<-c()
+knitr::kable(
+   z,
+  caption="Data Introduction"
+  ) %>% kable_styling(bootstrap_options = c("striped", "hover"),
+                full_width = F,
+                font_size = 12,
+                position = "left")
+```
+
+
+## Principle Component Analysis (for feature selection)
+
+
+# Analysis and Modeling
+
+## One number
+
+```{r pressure,results='asis'}
+pressure
+paste("The mean pressure is:", round(mean(pressure$pressure),3), "mm")
+```
+
+## A table
+
+
+```{r pressureTable}
+library(knitr)
+kable(head(pressure), format="pipe", digit=3)
+kable(tail(pressure), format="pipe", digit=3)
+```
+
+
+# Including Plots {.tabset .tabset-fade .tabset-pills}
+
+You can also embed plots, for example:
+
+## Plotly {-}
+
+```{r pressurePlot, echo=FALSE}
+library(plotly)
+plot_ly(pressure, x=~temperature, y=~pressure, type="scatter",mode="lines+markers")
+```
+
+## Map {-}
+
+```{r fsbLoc, echo=FALSE}
+library(dplyr)
+library(leaflet)
+leaflet()%>%addTiles%>%
+  setView(-84.7298,39.5113,zoom=17)%>%
+  addPopups(-84.7298,39.5113,"we are here")
+```
+
+For more details on organizing with tabset go here <https://bookdown.org/yihui/rmarkdown-cookbook/html-tabs.html>.
+
+# Equations
+
+You can include both inline and offset equations.
+
+## Inline equations
+
+You can include inline equations like $y = nx + b$, you can also do more complicated inline equations such as $\hat{y} = \hat{\beta} + \hat{\beta_1}x$
+
+## Offset equations
+
+\begin{euqation}
+y=mx+b
+\tag{1}
+\end{euqation}
+
+# References
