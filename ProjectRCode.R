@@ -7,7 +7,7 @@ pacman::p_load(tidyverse,hexbin,caret)
 library(curl)
 URL1="https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv"
 URL2="https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-white.csv"
-destloc=paste0(getwd(),".curltmp")
+destloc=paste0(getwd())
 curl_download(url=URL1,destfile=destloc,quiet=F,mode="wb")
 curl_download(url=URL2,destfile=destloc,quiet=F,mode="wb")
 
@@ -55,8 +55,8 @@ nrow(train)
 nrow(valid)
 
 # Stepwise
-step = lm(formula = quality ~ ., data = train)
-summary(step)
+step0 = lm(formula = quality ~ ., data = train)
+summary(step0)
 
 step1 = lm(formula = quality ~ fixed.acidity+volatile.acidity+residual.sugar+chlorides+ 
                     free.sulfur.dioxide+total.sulfur.dioxide+density+pH+sulphates+
@@ -67,6 +67,13 @@ step2 = lm(formula = quality ~ fixed.acidity+volatile.acidity+residual.sugar+
              free.sulfur.dioxide+total.sulfur.dioxide+density+pH+sulphates+
              alcohol+wine.type, data = train)
 summary(step2)
+
+library(MASS)
+# Fit the full model 
+full <- lm(quality ~., data = train)
+# Stepwise regression model
+step <- stepAIC(full, direction = "both", trace = FALSE)
+summary(step)
 
 p.train<-predict(step)
 p.valid<-predict(step, newdata=valid)

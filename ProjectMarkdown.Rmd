@@ -209,7 +209,11 @@ nrow(valid)
 
 ## Stepwise Model
 ```{r}
-step = lm(formula = quality ~ ., data = train)
+library(MASS)
+# Fit the full model 
+full <- lm(quality ~., data = train)
+# Stepwise regression model
+step <- stepAIC(full, direction = "both", trace = FALSE)
 summary(step)
 ```
 
