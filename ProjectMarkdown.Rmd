@@ -53,11 +53,15 @@ Outline
 
 # Introduction
 
+This article aims to provide a reproducible analytics workflow solving a hypothetical business problem using a predictive regression model on the UCI Wine data. A hypothetical business value proposition along with the full analytics solution will be provided. The important processes will also be documented. 
+
 ## Data Background
 
-The two datasets are related to red and white variants of the Portuguese "Vinho Verde" wine. For more details, consult: https://www.vinhoverde.pt/en/ 
+The datasets used is obtained from UCI Machine Learning Repository. The two datasets are related to red and white variants of the Portuguese "Vinho Verde" wine. For more details, consult: https://www.vinhoverde.pt/en/ 
 
 ## Business Problem
+
+The business background of the project is to provide an analytics solution to the sales team in assisting with predicting wine quality / expert rating using only its chemical feature. The sales team would like to estimate on the wine quality before being in an expert so that they can potentially reduce cost by only have the expert rate the wine that's estimated to have higher quality. 
 
 ## Business Value Proposition
 
@@ -75,9 +79,31 @@ Download white wine dataset: <https://archive.ics.uci.edu/ml/machine-learning-da
 
 ## Dataset Description
 
-Download available at: <https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality.names>
+The datasets include 12 variables: 
+
+Input variables: 
+
+ * fixed.acidity
+ * volatile.acidity
+ * citric.acid
+ * residual.sugar
+ * chlorides
+ * free.sulfur.dioxide
+ * density
+ * pH
+ * sulphates
+ * alcohol
+ * quality
+
+Output Variable:
+
+ * wine.type (Score between 0 and 10)
+
+For more information, read from this file: <https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality.names>
 
 ## A Glimps of Data {.tabset .tabset-fade .tabset-pills}
+
+There are 12 columns available in both datasets. We can see that both datasets have the same attributes with the same data type, therefore it is reasonable for them to be combined.
 
 ```{r}
 wineRed = read.csv("winequality-red.csv",sep = ";")
@@ -111,7 +137,30 @@ str(wineWhite)
 
 # Data Preprocessing
 
+Prepare the data by checking missing data, merging datasets, and creating functions necessary for later analysis. 
+
+```{r}
+Metadata<-function(df){
+  library(DataExplorer)
+  library(kableExtra)
+  z<-introduce(df)
+  z<-as.data.frame(t(z))
+  colnames(z)<-c()
+  knitr::kable(
+    z,
+    caption="Data Introduction"
+  ) %>% kable_styling(bootstrap_options = c("striped", "hover"),
+                      full_width = F,
+                      font_size = 12,
+                      position = "left")
+  
+}
+```
+
 ## Missing Data
+
+Based on the output below, we can see that there are no missing data present in both red and white wine datasets. 
+
 
 ```{r}
 library(tidyverse)
@@ -119,80 +168,74 @@ wineRed %>% is.na() %>% colSums()
 wineWhite %>% is.na() %>% colSums()
 ```
 
-There are no missing data present in both red and white wine datasets
-
 ## Merging Datasets {.tabset .tabset-fade .tabset-pills}
 
+The different wine types are transformed into dummies and stored in a categorical variable named wine.type. 
+
 ```{r}
+# Create Dummies
 wineRed$wine.type <- 1
 wineWhite$wine.type <- 0
+
+# Check Dimensions
 dim(wineRed)
 dim(wineWhite)
+
+# Combine dataframes
 wine = rbind(wineRed, wineWhite)
+
+# Recode attribute as factor
 wine$wine.type <- as.factor(wine$wine.type)
+
+# Double check dimension
 dim(wine)
 ```
 
 ### MetaData For Red Wine {-}
 
 ```{r echo=FALSE}
-library(DataExplorer)
-library(kableExtra)
-z<-introduce(wineRed)
-z<-as.data.frame(t(z))
-colnames(z)<-c()
-knitr::kable(
-   z,
-  caption="Data Introduction"
-  ) %>% kable_styling(bootstrap_options = c("striped", "hover"),
-                full_width = F,
-                font_size = 12,
-                position = "left")
+source("Functions.R")
+Metadata(wineRed)
 ```
 
 ### MetaData For White Wine {-}
 
 ```{r echo=FALSE}
-library(DataExplorer)
-library(kableExtra)
-z<-introduce(wineWhite)
-z<-as.data.frame(t(z))
-colnames(z)<-c()
-knitr::kable(
-   z,
-  caption="Data Introduction"
-  ) %>% kable_styling(bootstrap_options = c("striped", "hover"),
-                full_width = F,
-                font_size = 12,
-                position = "left")
+source("Functions.R")
+Metadata(wineWhite)
 ```
 
 ### MetaData For Wine {-}
 
 ```{r echo=FALSE}
-library(DataExplorer)
-library(kableExtra)
-z<-introduce(wine)
-z<-as.data.frame(t(z))
-colnames(z)<-c()
-knitr::kable(
-   z,
-  caption="Data Introduction"
-  ) %>% kable_styling(bootstrap_options = c("striped", "hover"),
-                full_width = F,
-                font_size = 12,
-                position = "left")
+source("Functions.R")
+Metadata(wine)
 ```
 
 
 # Explanatory Data Analysis
 
+To explore the dataset, we can take a look at a scatterplot for the response. We will use histograms for numerical variables, bar chart for categorical variables. Some  other summarized statistics were also shown down below. 
+
 ## Dataset Summary {.tabset .tabset-fade .tabset-pills}
+
+From the scatterplot, we cannot see any obvious trend between any variables and response. 
+
+From the histogram, we can see that most numeric variables are right skewed and unimodel which makes sense as these variables can't have negative values. PH and quality are both normally distributed. Total sulfur dioxide seems to be bimodel.
+
+The barplot shows the distribution of red and white wine with more white wine in the data. 
 
 ### Head of Wine {-}
 
 ```{r}
 head(wine)
+```
+
+### Scatterplot {-}
+
+```{r}
+## Scatterplot `quality` with all other continuous features
+plot_scatterplot(split_columns(wine)$continuous, by = "quality", sampled_rows = 1000L)
 ```
 
 ### Histograms {-}
@@ -221,9 +264,9 @@ summary(wine)
 str(wine)
 ```
 
-## Correlation & Multicolinearity {.tabset}
+## Correlation & Multicolinearity
 
-### Correlation Plot {-}
+### Correlation Plot
 
 ```{r}
 library(DataExplorer)
@@ -232,13 +275,18 @@ plot_correlation(wine, type = "c")
 
 ### Strong Correlations
 
-Some of the predictors have strong correlations: 
+Based on the correlation plot above, some of the predictors have strong correlations: 
+
  * Between density and alcohol (-0.69)
  * Between free.sulfur.dioxide and total.sulfur.dioxide (0.72)
+
+These strongly correlated variable could potentially lead to multicolinearity. 
 
 # Modeling
 
 ## Spliting Data
+
+To build the model, I will split it up the dataset into 75% of data for train datasets and 25% of data for test datasets.
 
 ```{r}
 set.seed(13)
@@ -250,6 +298,8 @@ nrow(valid)
 ```
 
 ## Stepwise Model
+
+We will feed all predictors to create a full model, and then run a stepwise model from both directions. I have eliminated the summary for full model and show the summary for the final stepwise model down below. 
 
 ```{r}
 library(MASS)
