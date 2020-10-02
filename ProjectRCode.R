@@ -54,29 +54,6 @@ valid<-wine[-trainIndex, ]
 nrow(train)
 nrow(valid)
 
-# feature importance
-set.seed(13)
-library(caret)
-rPartMod <- train(quality ~ ., data=train, method="rpart")
-rpartImp <- varImp(rPartMod)
-print(rpartImp)
-
-
-step1 = lm(formula = quality ~ fixed.acidity+volatile.acidity+residual.sugar+chlorides+ 
-                    free.sulfur.dioxide+total.sulfur.dioxide+density+pH+sulphates+
-                    alcohol+wine.type, data = train)
-summary(step1)
-
-step2 = lm(formula = quality ~ fixed.acidity+volatile.acidity+residual.sugar+ 
-             free.sulfur.dioxide+total.sulfur.dioxide+density+pH+sulphates+
-             alcohol+wine.type, data = train)
-summary(step2)
-
-step3 = lm(formula = quality ~ volatile.acidity+ 
-             free.sulfur.dioxide+density+citric.acid+
-             alcohol, data = train)
-summary(step3)
-
 # StepWise Model
 library(MASS)
 # Fit the full model 
@@ -87,7 +64,6 @@ summary(step)
 varImp(step)
 library(car)
 vif(step)
-
 
 p.valid<-predict(step, newdata=valid)
 head(p.train)
