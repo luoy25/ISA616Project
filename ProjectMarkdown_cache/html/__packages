@@ -16,3 +16,8 @@ readr
 purrr
 stringr
 forcats
+pacman
+hexbin
+carData
+car
+MLmetrics
