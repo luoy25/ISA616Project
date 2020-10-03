@@ -7,6 +7,9 @@ Please make sure the "BusinessValueProposition.PNG" file is in the same folder a
 ## refs.bib - reference
 Please make sure the "refs.bib" file is in the same folder as the markdown document, or source it as needed
 
+## Functions.R
+Please make sure "Functions.R" file is in the same folder as the markdown document, or source it as needed
+
 ## Datasets
 Please make sure "winequality-red.csv" and "winequality-white.csv" are both stored in the same folder as the markdown document, or source them as needed
 
