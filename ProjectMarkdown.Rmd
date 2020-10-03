@@ -109,14 +109,16 @@ str(wineWhite)
 
 # Data Preprocessing
 
-Before we work on preparing the data, we need to load the needed libraries and also create functions(if needed) for further anlaysis. 
+Before we work on preparing the data, we need to load the needed libraries and also create functions(if needed) for further analysis. 
 
 ```{r}
 # Load required packages
 if(require(pacman)==FALSE) 
   install.packages("pacman")
 pacman::p_load(tidyverse,hexbin,caret,car,DataExplorer,kableExtra,MLmetrics)
+```
 
+```{r}
 # Create Metadata Function
 Metadata<-function(df){
   library(DataExplorer)
