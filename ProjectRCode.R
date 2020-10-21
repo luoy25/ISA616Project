@@ -73,7 +73,12 @@ RMSE(p.valid, valid$quality)
 R2(p.valid, valid$quality)
 
 
-
+citation("dplyr")
+citation("caret")
+citation("DataExplorer")
+citation("kableExtra")
+citation("MLmetrics")
+citation("MASS")
 
 
 
