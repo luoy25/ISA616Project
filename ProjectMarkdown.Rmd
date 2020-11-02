@@ -360,6 +360,60 @@ Evaluation(step, p.valid, valid$quality)
 
 As we can see from the results above, there seems to be no overfitting issues as the results for training data is similar to that of validation data. The model seemed to even performed slightly better on the validation dataset as we have a slightly lower RMSE of 0.7319 compared to 0.7334. We have an adjusted R-squared of 0.2977 meaning that on average 29.77% of the variation can be explained by the model. 
 
+## Business Implications
+
+### Limitation in data
+
+```{r}
+plot_histogram(wine$quality)
+```
+
+From the histogram, we can see that the majority of the data falls into the middle range of the quality scale. This is not very helpful in our model building as we are interested in learning what makes a wine being ranked very low or high and there are not enough data that we have on hand to teach the model what a really bad wine is like. To improve that, we can collect more wine data especially the ones that has low ratings or high ratings. Conducting a model on a dataset with a balanced quality scale would possible help with improving the model performance. 
+
+### Limitation on wine rating process itself
+
+Imagine we collected more data like mentioned above and realized that the model was not improved much, and is still not powerful in predicting the wine quality, we need to start thinking about the wine rating process itself. This means that the data we currently have on hand can only provide us with this much information and we can't do any better by adjusting the model. We need to look into the wine rating process and find out what are the other factors that impacts the ratings of wine. A possible solution is to observe the rating process of a wine rating expert. Some levels of interviews may also be conducted to find out why they rate the wine the way it is. Perhaps it is factors like the smell of the wine, or the color of the liquid, or even whether there are bitterness in the taste. Once more important factors has been found, we need to collect such data on the wine being rated and start building new models on these newly collected data. 
+
+### Current Model
+
+Let's say that we can not collect more data and that we also cannot find a wine expert who is willing to explain the impact factors to us, we will have to use our current model to meet our objective. Although the model performs poorly based on its prediction power, depending on the end goal and our criteria, we can effectively use this model regardless of its poor performance. 
+Let's take a look at the model performance
+
+#### Performance Evaluation {.tabset .tabset-fade .tabset-pills}
+
+##### In sample Performance {-}
+```{r}
+train$pred_quality=step$fitted.values
+
+p=ggplot(data = train)+
+  geom_point(aes(quality,pred_quality,col="blue"),size=1,data=train)
+p=p+xlim(2,10)+ylim(2,10)
+p=p+labs(x="Actual Quality",y="Predicted Quality")+ggtitle("In sample performance")
+p=p+scale_color_manual(labels = c("Stepwise Model"),values = c("blue"))
+p=p+geom_abline(slope = 1,intercept = 0)
+p
+```
+
+##### Out of sample Performance {-}
+```{r}
+valid$pred_quality=predict(step, newdata=valid)
+
+p = ggplot(data = valid)+
+  geom_point(aes(quality,pred_quality,col="red"),size=1)
+p=p+xlim(2,10)+ylim(2,10)
+p=p+labs(x="Actual Quality",y="Predicted Quality")+ggtitle("Out of Sample performance")
+p=p+scale_color_manual(labels = c("Stepwise Model"),values = c("red"))
+p=p+geom_abline(slope = 1,intercept = 0)
+p
+```
+#### Recommendations
+
+Based on the in sample performance graphic, we can see that the model prediction is not well matched with the actual quality. To be more specific, we can see that the prediction on lower grade wine tends to be relatively high while the predictions for higher grade wine tends to be relatively low. And that is the main reason our overall prediction is way off the expectation. As mentioned earlier, this could be happening due to the lack of data on lower and higher grade wine. However, this current model can be used effectively based on our business objective and our criteria.
+
+Our overall goal is to reduce the amount of wine rated so that the cost of bringing in experts can be reduced. However, we need to be relatively conservation and not eliminate any wine that are actually high quality wine. The model can help us select the wine to be eliminated for all the predicted values being 5 or lower. Because based on the performance result, we can see that all the value predicted to be lower than 5 is in reality lower than 7. Depending on the criteria of the business, we can change the threshold of elimination as long as we made sure it is lower than 5 because once the predicted value hits 6, some of the actual high quality wine will be eliminated. The only down side is that a lot of low quality wine will still be rated higher than 5 and we will end up bring in experts for them making it a bit more costly. However, we are still reducing the cost from rating all wine to cutting out a small portion of fairly low quality wine to not be rated. 
+
+Just to make sure this pattern is reasonable, we can double check on the out of sample data to ensure its performance. We can see that all wine that has a predicted score of 5 or below has in reality, a quality less than 6. Although we weren't able to eliminate the very low rated wine, the model is helpful to ensure that we are not eliminating any high quality wine to be rated. 
+
 # Conclusion
 
 ## Project Results

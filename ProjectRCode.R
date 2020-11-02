@@ -3,13 +3,13 @@ if(require(pacman)==FALSE)
   install.packages("pacman")
 pacman::p_load(tidyverse,hexbin,caret,car)
 
-# Get data
-library(curl)
-URL1="https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv"
-URL2="https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-white.csv"
-destloc=paste0(getwd())
-curl_download(url=URL1,destfile=destloc,quiet=F,mode="wb")
-curl_download(url=URL2,destfile=destloc,quiet=F,mode="wb")
+# # Get data
+# library(curl)
+# URL1="https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv"
+# URL2="https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-white.csv"
+# destloc=paste0(getwd())
+# curl_download(url=URL1,destfile=destloc,quiet=F,mode="wb")
+# curl_download(url=URL2,destfile=destloc,quiet=F,mode="wb")
 
 # Data preparation
 # load data
@@ -37,10 +37,10 @@ summary(wine)
 is.na(wine)
 # get a report for wine dataset
 library(DataExplorer)
-create_report(wine)
+# create_report(wine)
 # Get a report with response variable "quality"
 library(ggplot2)
-create_report(wine, y = "quality")
+# create_report(wine, y = "quality")
 # save data
 saveRDS(wine, "wine.RDS")
 wine=readRDS("wine.RDS")
@@ -72,15 +72,34 @@ library(caret)
 RMSE(p.valid, valid$quality)
 R2(p.valid, valid$quality)
 
+# 
+# citation("dplyr")
+# citation("caret")
+# citation("DataExplorer")
+# citation("kableExtra")
+# citation("MLmetrics")
+# citation("MASS")
 
-citation("dplyr")
-citation("caret")
-citation("DataExplorer")
-citation("kableExtra")
-citation("MLmetrics")
-citation("MASS")
+plot(train$quality)
 
+train$pred_quality=step$fitted.values
+valid$pred_quality=predict(step, newdata=valid)
 
+p=ggplot(data = train)+
+  geom_point(aes(quality,pred_quality,col="blue"),size=3,data=train)
+p=p+xlim(2,10)+ylim(2,10)
+p=p+labs(x="Quality",y="Predicted Quality")+ggtitle("In sample performance")
+p=p+scale_color_manual(labels = c("In Sample Performance"),values = c("blue"))
+p=p+geom_abline(slope = 1,intercept = 0)
+p
 
+p = ggplot(data = valid)+
+  geom_point(aes(quality,pred_quality,col="red"),size=3)
+p=p+xlim(2,10)+ylim(2,10)
+p=p+labs(x="Quality",y="Predicted Quality")+ggtitle("In sample performance")
+p=p+scale_color_manual(labels = c("Out of Sample Performance"),values = c("red"))
+p=p+geom_abline(slope = 1,intercept = 0)
+p
 
-
+plot_histogram(wine$quality)
+plot(wine$quality)
