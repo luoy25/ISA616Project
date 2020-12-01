@@ -65,6 +65,14 @@ varImp(step)
 library(car)
 vif(step)
 
+# output the summary as a table
+# load package
+library(sjPlot)
+library(sjmisc)
+library(sjlabelled)
+
+tab_model(step)
+
 p.valid<-predict(step, newdata=valid)
 head(p.train)
 

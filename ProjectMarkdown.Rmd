@@ -115,7 +115,7 @@ Before we work on preparing the data, we need to load the needed libraries and a
 # Load required packages
 if(require(pacman)==FALSE) 
   install.packages("pacman")
-pacman::p_load(tidyverse,hexbin,caret,car,DataExplorer,kableExtra,MLmetrics)
+pacman::p_load(tidyverse,hexbin,caret,car,DataExplorer,kableExtra,MLmetrics,sjPlot,sjmisc,sjlabelled)
 ```
 
 ```{r}
@@ -301,7 +301,7 @@ options(scipen=999)
 full <- lm(quality ~., data = train)
 # Stepwise regression model
 step <- stepAIC(full, direction = "both", trace = FALSE)
-summary(step)
+tab_model(step)
 ```
 
 # Results and Performance

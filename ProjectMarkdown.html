@@ -11,7 +11,7 @@
 
 <meta name="author" content="Yao Luo" />
 
-<meta name="date" content="2020-10-30" />
+<meta name="date" content="2020-12-01" />
 
 <title>ISA 616 Class Project RMarkdown</title>
 
@@ -2863,7 +2863,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">ISA 616 Class Project RMarkdown</h1>
 <h4 class="author">Yao Luo</h4>
-<h4 class="date">October 30, 2020</h4>
+<h4 class="date">December 01, 2020</h4>
 
 </div>
 
@@ -2980,7 +2980,7 @@ wineWhite = read.csv(&quot;winequality-white.csv&quot;,sep = &quot;;&quot;)</cod
 <pre class="r"><code># Load required packages
 if(require(pacman)==FALSE) 
   install.packages(&quot;pacman&quot;)
-pacman::p_load(tidyverse,hexbin,caret,car,DataExplorer,kableExtra,MLmetrics)</code></pre>
+pacman::p_load(tidyverse,hexbin,caret,car,DataExplorer,kableExtra,MLmetrics,sjPlot,sjmisc,sjlabelled)</code></pre>
 <pre class="r"><code># Create Metadata Function
 Metadata&lt;-function(df){
   library(DataExplorer)
@@ -3423,36 +3423,201 @@ options(scipen=999)
 full &lt;- lm(quality ~., data = train)
 # Stepwise regression model
 step &lt;- stepAIC(full, direction = &quot;both&quot;, trace = FALSE)
-summary(step)</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = quality ~ fixed.acidity + volatile.acidity + residual.sugar + 
-##     free.sulfur.dioxide + total.sulfur.dioxide + density + pH + 
-##     sulphates + alcohol + wine.type, data = train)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -3.5440 -0.4690 -0.0480  0.4567  3.0005 
-## 
-## Coefficients:
-##                          Estimate   Std. Error t value             Pr(&gt;|t|)    
-## (Intercept)           117.8048433   17.9777137   6.553  0.00000000006230879 ***
-## fixed.acidity           0.1027149    0.0189541   5.419  0.00000006278223906 ***
-## volatile.acidity       -1.5303849    0.0879938 -17.392 &lt; 0.0000000000000002 ***
-## residual.sugar          0.0684618    0.0072060   9.501 &lt; 0.0000000000000002 ***
-## free.sulfur.dioxide     0.0038981    0.0008880   4.390  0.00001158575072963 ***
-## total.sulfur.dioxide   -0.0012606    0.0003756  -3.356             0.000796 ***
-## density              -117.8566507   18.2523666  -6.457  0.00000000011717236 ***
-## pH                      0.6012658    0.1065681   5.642  0.00000001775253255 ***
-## sulphates               0.6918250    0.0878987   7.871  0.00000000000000432 ***
-## alcohol                 0.2168695    0.0229033   9.469 &lt; 0.0000000000000002 ***
-## wine.type1              0.3659543    0.0675387   5.418  0.00000006302367980 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 0.7342 on 4862 degrees of freedom
-## Multiple R-squared:  0.2991, Adjusted R-squared:  0.2977 
-## F-statistic: 207.5 on 10 and 4862 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+tab_model(step)</code></pre>
+<table style="border-collapse:collapse; border:none;">
+<tr>
+<th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">
+ 
+</th>
+<th colspan="3" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">
+quality
+</th>
+</tr>
+<tr>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; ">
+Predictors
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
+Estimates
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
+CI
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
+p
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+(Intercept)
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+117.80
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+82.56 – 153.05
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+fixed.acidity
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.10
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.07 – 0.14
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+volatile.acidity
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-1.53
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-1.70 – -1.36
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+residual.sugar
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.07
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.05 – 0.08
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+free.sulfur.dioxide
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.00
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.00 – 0.01
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+total.sulfur.dioxide
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-0.00
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-0.00 – -0.00
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+density
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-117.86
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-153.64 – -82.07
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+pH
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.60
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.39 – 0.81
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+sulphates
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.69
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.52 – 0.86
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+alcohol
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.22
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.17 – 0.26
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+wine.type [1]
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.37
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.23 – 0.50
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">
+Observations
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="3">
+4873
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+R<sup>2</sup> / R<sup>2</sup> adjusted
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">
+0.299 / 0.298
+</td>
+</tr>
+</table>
 </div>
 </div>
 <div id="results-and-performance" class="section level1">
